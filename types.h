@@ -1,25 +1,34 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-enum {
-	CT_STRING,
-	CT_COMMAND,
-	CT_FUNCTION
-};
+typedef union {
+	int i;
+	float f;
+	const void *v;
+} Arg;
+
+typedef enum {
+	CtString,
+	CtCommand,
+	CtFunction
+} ContentType;
 
 typedef union {
 	char* s;
 	char* c;
-	char* (*f)(const void*);
+	struct {
+		int (*func)(const Arg*);
+		const Arg arg;
+	} f;
 } Content;
 
 typedef struct {
-	char *prefix;
-	char *suffix;
-	Content content;
-	int content_type;
-	int interval;
-	int signal;
+	char *p;
+	ContentType ct;
+	Content c;
+	char *s;
+	int i;
+	int S;
 } Block;
 
 #endif // TYPES_H
