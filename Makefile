@@ -17,5 +17,10 @@ $(OBJ): config.h types.h arg.h
 dwmstatus: dwmstatus.o
 	$(CC) -o $@ $(OBJ)
 
+debug: CFLAGS += -g -DDEBUG
+debug: options dwmstatus
+
 clean:
 	-rm dwmstatus *.o
+
+.PHONY = all options debug clean
