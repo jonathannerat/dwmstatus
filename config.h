@@ -10,13 +10,10 @@
 #define STR(str) .ct=CtString, .c.s=str
 #define CMD(cmd) .ct=CtCommand, .c.s=cmd
 
-/* write this from your custom functions */
-static char funcbuf[MAX_BLOCK_LEN];
-
-int numberofblocks(const Arg* arg);
+int numberofblocks(char* dest, unsigned int size, const Arg* arg);
 
 static const Block blocks[] = {
-	{ .p = "# ", FUNC(numberofblocks, { .v = "%d" }), .s = " blocks" },
+	{ .p = "# ", FUNC(numberofblocks, {}), .s = " blocks" },
 	{ .p = " ", CMD("date +%T"), .i = 10 },
 	{ .p = " ", STR("Jonathan") },
 };
@@ -24,10 +21,11 @@ static const Block blocks[] = {
 static const char delim[] = " | ";
 
 int
-numberofblocks(const Arg* arg)
+numberofblocks(char* output, unsigned int size, const Arg* arg)
 {
+	char b[2];
 	int nblocks = LENGTH(blocks);
-	snprintf(funcbuf, MAX_BLOCK_LEN, (char*) arg->v, nblocks);
+	snprintf(b, size, "%d", nblocks);
 
-	return 1;
+	return xstrncpy(output, b, size);
 }

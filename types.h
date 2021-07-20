@@ -17,7 +17,7 @@ typedef union {
 	char* s;
 	char* c;
 	struct {
-		int (*func)(const Arg*);
+		int (*func)(char*, unsigned int, const Arg*);
 		const Arg arg;
 	} f;
 } Content;

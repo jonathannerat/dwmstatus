@@ -103,8 +103,9 @@ cacheblock(const Block *b, char *output)
 			if (newoutput[offset-1] == '\n') newoutput[--offset] = '\0';
 			break;
 		case CtFunction:
-			update = b->c.f.func(&b->c.f.arg);
-		 	offset += xstrncpy(newoutput + offset, funcbuf, MAX_BLOCK_LEN - offset);
+			// returns written bytes to output
+			update = b->c.f.func(newoutput + offset, MAX_BLOCK_LEN - offset, &b->c.f.arg);
+		 	offset += update;
 			break;
 		default:
 			fprintf(stderr, "Invalid c type: %d. Read config.h", b->ct);
