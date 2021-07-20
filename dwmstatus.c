@@ -3,12 +3,11 @@
 #include <string.h>
 #include <unistd.h>
 
-#define LENGTH(X) (sizeof(X) / sizeof(X[0]))
-
 char* argv0;
 #include "arg.h"
 #include "types.h"
 #include "config.h"
+#include "util.h"
 
 
 
@@ -20,7 +19,6 @@ void run(void);
 int statuschanged();
 void usage(void);
 void xsetroot(void);
-int xstrncpy(char* dest, char* src, unsigned long size);
 void writeblocks(char *buffer);
 
 
@@ -150,9 +148,6 @@ run(void)
 		for (i = 0, b = blocks; i < LENGTH(blocks); i++, b++)
 			if ((!b->i && !time) ||
 			    (b->i != 0 && time % b->i == 0)) {
-#ifdef DEBUG
-				printf("caching block %d\n", i);
-#endif
 				cacheblock(b, cachedblocks[i]);
 			}
 
@@ -191,26 +186,6 @@ void
 xsetroot(void)
 {
 	return;
-}
-
-
-/* copies at most size-1 bytes from src to dest, ending with a null byte
- * 
- */
-int
-xstrncpy(char* dest, char* src, unsigned long size)
-{
-	int written = 0;
-	char *pdest = dest, *psrc = src;
-
-	while (written < size - 1 && psrc && *psrc != '\0') {
-		*pdest++ = *psrc++;
-		++written;
-	}
-
-	*pdest = '\0';
-
-	return written;
 }
 
 void

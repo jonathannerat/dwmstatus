@@ -1,4 +1,4 @@
-SRC=dwmstatus.c
+SRC=dwmstatus.c util.c
 OBJ=$(SRC:.c=.o)
 
 all: options dwmstatus
@@ -14,7 +14,7 @@ options:
 
 $(OBJ): config.h types.h arg.h
 
-dwmstatus: dwmstatus.o
+dwmstatus: $(OBJ)
 	$(CC) -o $@ $(OBJ)
 
 debug: CFLAGS += -g -DDEBUG

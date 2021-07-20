@@ -1,4 +1,7 @@
+#include <stdio.h>
+
 #include "types.h"
+#include "util.h"
 
 #define MAX_BLOCK_LEN 50
 #define MAX_STATUS_LEN 256
@@ -14,7 +17,8 @@ int numberofblocks(const Arg* arg);
 
 static const Block blocks[] = {
 	{ .p = "# ", FUNC(numberofblocks, { .v = "%d" }), .s = " blocks" },
-	{ .p = "Hi ", STR("Jonathan") },
+	{ .p = " ", CMD("date +%T"), .i = 10 },
+	{ .p = " ", STR("Jonathan") },
 };
 
 static const char delim[] = " | ";
