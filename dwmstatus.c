@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <X11/Xlib.h>
 
 char* argv0;
 #include "arg.h"
@@ -18,12 +19,15 @@ void printstdout(void);
 void run(void);
 int statuschanged();
 void usage(void);
-void xsetroot(void);
+void setroot(void);
 void writeblocks(char *buffer);
 
 
 
-static void (*writestatus)(void) = printstdout;
+static Display* dpy;
+static int screen;
+static Window root;
+static void (*writestatus)(void) = setroot;
 static int stop = 0;
 static int time = 0;
 static char cachedblocks[LENGTH(blocks)][MAX_BLOCK_LEN] = {0};
@@ -184,9 +188,15 @@ usage(void)
 }
 
 void
-xsetroot(void)
+setroot(void)
 {
-	return;
+	dpy = XOpenDisplay(NULL);
+	if (!dpy) die("cannot open display");
+
+	screen = DefaultScreen(dpy);
+	root = RootWindow(dpy, screen);
+	XStoreName(dpy, root, cachedstatuses[0]);
+	XCloseDisplay(dpy);
 }
 
 void

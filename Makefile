@@ -1,5 +1,7 @@
-SRC=dwmstatus.c util.c
-OBJ=$(SRC:.c=.o)
+SRC  = dwmstatus.c util.c
+OBJ  = $(SRC:.c=.o)
+LIBS = -lX11
+LDFLAGS = $(LIBS)
 
 all: options dwmstatus
 
@@ -15,7 +17,7 @@ options:
 $(OBJ): config.h types.h arg.h
 
 dwmstatus: $(OBJ)
-	$(CC) -o $@ $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $(OBJ)
 
 debug: CFLAGS += -g -DDEBUG
 debug: options dwmstatus
