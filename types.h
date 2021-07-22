@@ -28,7 +28,7 @@ typedef struct {
 	Content c;
 	char *s;
 	int i;
-	int S;
+	int sig;
 } Block;
 
 #endif // TYPES_H

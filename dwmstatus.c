@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,13 +14,17 @@ char* argv0;
 
 
 int blockintervalgcd();
+int statuschanged();
+void buttonhandler(int sig, siginfo_t *si, void *context);
 void cacheblock(const Block *b, char *output);
 void parseargs(int argc, char* argv[]);
 void printstdout(void);
 void run(void);
-int statuschanged();
-void usage(void);
 void setroot(void);
+void setupsignals();
+void sighandler(int signum);
+void termsighandler(int signum);
+void usage(void);
 void writeblocks(char *buffer);
 
 
@@ -39,6 +44,10 @@ int
 main(int argc, char *argv[])
 {
 	parseargs(argc, argv);
+
+	signal(SIGTERM, termsighandler);
+	signal(SIGINT, termsighandler);
+	setupsignals();
 
 	run();
 	return 0;
@@ -75,6 +84,10 @@ blockintervalgcd()
 
 	return gcd;
 }
+
+void
+buttonhandler(int sig, siginfo_t *si, void *context)
+{}
 
 void
 cacheblock(const Block *b, char *output)
@@ -168,6 +181,49 @@ run(void)
 	}
 }
 
+void
+setupsignals()
+{
+	struct sigaction sa;
+	const Block *current;
+
+	// block signals
+	for (int i = 0; i < LENGTH(blocks); i++) {
+		current = blocks + i;
+		if (current->sig > 0) {
+			signal(SIGRTMIN + current->sig, sighandler);
+			sigaddset(&sa.sa_mask, SIGRTMIN + current->sig);
+		}
+	}
+
+	sa.sa_sigaction = buttonhandler;
+	sa.sa_flags = SA_SIGINFO;
+
+	sigaction(SIGUSR1, &sa, NULL);
+
+	struct sigaction sa_child = {
+		.sa_handler = SIG_DFL,
+		.sa_flags = SA_NOCLDWAIT
+	};
+
+	sigaction(SIGCHLD, &sa_child, NULL);
+}
+
+void
+sighandler(int signum)
+{
+	const Block *b;
+
+	for (int i = 0; i < LENGTH(blocks); i++) {
+		b = blocks + i;
+
+		if (b->sig == signum - SIGRTMIN)
+			cacheblock(b, cachedblocks[i]);
+	}
+
+	if (statuschanged()) writestatus();
+}
+
 int
 statuschanged()
 {
@@ -179,6 +235,12 @@ statuschanged()
 	writeblocks(current);
 
 	return strcmp(current, last);
+}
+
+void
+termsighandler(int signum)
+{
+	stop = 1;
 }
 
 void
