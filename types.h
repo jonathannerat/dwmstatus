@@ -19,6 +19,7 @@ typedef union {
 	struct {
 		int (*func)(char*, unsigned int, const Arg*);
 		const Arg arg;
+		void (*cleanfunc)(void*);
 	} f;
 } Content;
 
