@@ -107,7 +107,10 @@ cacheblock(const Block *b, char *output)
 		case CtCommand:
 			cmd = b->c.c;
 			cmdout = popen(cmd, "r");
-			if (!cmdout) sprintf(newoutput, "☠ ");
+			if (!cmdout) {
+				offset += xstrncpy(newoutput, "☠  popen error", MAX_BLOCK_LEN - offset);
+				break;
+			}
 			
 			fgets(newoutput + offset, MAX_BLOCK_LEN - offset, cmdout);
 			pclose(cmdout);
@@ -122,7 +125,7 @@ cacheblock(const Block *b, char *output)
 		case CtFunction:
 			// returns written bytes to output
 			update = b->c.f.func(newoutput + offset, MAX_BLOCK_LEN - offset, &b->c.f.arg);
-		 	offset += update;
+			offset += update;
 			break;
 		default:
 			fprintf(stderr, "Invalid c type: %d. Read config.h", b->ct);

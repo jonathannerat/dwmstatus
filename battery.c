@@ -37,6 +37,7 @@ battery_status(char *output, unsigned int size, const Arg *arg)
 {
 	GVariant *retval;
 	GVariantDict *devprops;
+	int written = 0;
 
 	double percentage;
 	dbus_uint32_t state;
@@ -48,6 +49,7 @@ battery_status(char *output, unsigned int size, const Arg *arg)
 
 		if (proxy == NULL) {
 			strncpy(output, " Error", size);
+			written = strlen(output);
 			fprintf(stderr, "Error creating dbus proxy: %s",
 				baterr->message);
 			return 1;
@@ -61,10 +63,10 @@ battery_status(char *output, unsigned int size, const Arg *arg)
 
 	if (g_variant_dict_lookup(devprops, "Percentage", "d", &percentage)
 		&& g_variant_dict_lookup(devprops, "State", "u", &state)) {
-		snprintf(output, size, "%s %d", icons[state-1][(int)percentage/20], (int) percentage);
+		written = snprintf(output, size, "%s %d", icons[state-1][(int)percentage/20], (int) percentage);
 	}
 
-	return 1;
+	return written;
 }
 
 void
