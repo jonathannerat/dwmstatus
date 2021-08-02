@@ -1,4 +1,4 @@
-SRC  = dwmstatus.c util.c battery.c
+SRC  = dwmstatus.c util.c battery.c carousel.c
 OBJ  = $(SRC:.c=.o)
 LIBS = -lX11 `pkg-config --libs dbus-glib-1 gio-2.0` 
 CFLAGS = `pkg-config --cflags dbus-glib-1 gio-2.0` 
