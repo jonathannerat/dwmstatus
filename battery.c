@@ -37,7 +37,7 @@ battery_status(char *output, unsigned int size, const Arg *arg)
 {
 	GVariant *retval;
 	GVariantDict *devprops;
-	int written = 0;
+	int written = 0, index;
 
 	double percentage;
 	dbus_uint32_t state;
@@ -63,7 +63,8 @@ battery_status(char *output, unsigned int size, const Arg *arg)
 
 	if (g_variant_dict_lookup(devprops, "Percentage", "d", &percentage)
 		&& g_variant_dict_lookup(devprops, "State", "u", &state)) {
-		written = snprintf(output, size, "%s %d", icons[state-1][(int)percentage/20], (int) percentage);
+		index = (int) percentage / 20;
+		written = snprintf(output, size, "%s %d", icons[state-1][index == 5 ? 4 : index], (int) percentage);
 	}
 
 	return written;
