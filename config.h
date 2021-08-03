@@ -2,7 +2,7 @@
 
 #include "types.h"
 #include "util.h"
-#include "carousel.h"
+#include "animators.h"
 #include "mpd.h"
 
 #define MAX_BLOCK_LEN 50

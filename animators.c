@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "carousel.h"
+#include "animators.h"
 #include "util.h"
 
 static unsigned int i = 0;

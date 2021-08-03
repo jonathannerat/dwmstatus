@@ -1,7 +1,7 @@
 .POSIX:
 
 PREFIX = /usr/local
-SRC  = dwmstatus.c util.c battery.c carousel.c mpd.c
+SRC  = dwmstatus.c util.c battery.c animators.c mpd.c
 OBJ  = $(SRC:.c=.o)
 LIBS = -lX11 -lmpdclient `pkg-config --libs dbus-glib-1 gio-2.0` 
 CFLAGS = `pkg-config --cflags dbus-glib-1 gio-2.0` 
@@ -18,7 +18,8 @@ options:
 dwmstatus: $(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $(OBJ)
 
-$(OBJ): config.h types.h arg.h
+$(OBJ): types.h
+dwmstatus.o: config.h
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

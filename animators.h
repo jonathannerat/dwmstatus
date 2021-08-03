@@ -1,5 +1,5 @@
-#ifndef CAROUSEL_H
-#define CAROUSEL_H
+#ifndef ANIMATORS_H
+#define ANIMATORS_H
 
 #include "types.h"
 
@@ -18,4 +18,4 @@ CarouselArg name = { name##_items__, LENGTH(name##_items__) };
 
 int carousel(char *output, unsigned int size, const Arg *arg);
 
-#endif // CAROUSEL_H
+#endif // ANIMATORS_H
