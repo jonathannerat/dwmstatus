@@ -15,7 +15,6 @@ char* argv0;
 
 int blockintervalgcd();
 int statuschanged();
-void buttonhandler(int sig, siginfo_t *si, void *context);
 void cacheblock(const Block *b, char *output);
 void parseargs(int argc, char* argv[]);
 void printstdout(void);
@@ -84,10 +83,6 @@ blockintervalgcd()
 
 	return gcd;
 }
-
-void
-buttonhandler(int sig, siginfo_t *si, void *context)
-{}
 
 void
 cacheblock(const Block *b, char *output)
@@ -188,21 +183,17 @@ void
 setupsignals()
 {
 	struct sigaction sa;
+	sa.sa_flags = 0;
 	const Block *current;
 
 	// block signals
 	for (int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
 		if (current->sig > 0) {
-			signal(SIGRTMIN + current->sig, sighandler);
-			sigaddset(&sa.sa_mask, SIGRTMIN + current->sig);
+			sa.sa_handler = sighandler;
+			sigaction(SIGRTMIN + current->sig, &sa, NULL);
 		}
 	}
-
-	sa.sa_sigaction = buttonhandler;
-	sa.sa_flags = SA_SIGINFO;
-
-	sigaction(SIGUSR1, &sa, NULL);
 
 	struct sigaction sa_child = {
 		.sa_handler = SIG_DFL,
