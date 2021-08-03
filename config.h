@@ -2,21 +2,22 @@
 
 #include "types.h"
 #include "util.h"
-#include "battery.h"
 #include "carousel.h"
+#include "mpd.h"
 
 #define MAX_BLOCK_LEN 50
 #define MAX_STATUS_LEN 256
 
 CAROUSEL(disk_usage, {
-	{ CMD("df /     | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt --from=auto --to=iec --format=\"/ %.2f\"") },
-	{ CMD("df /home | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt --from=auto --to=iec --format=\"/home %.2f\"") },
+	{ CMD("df /     | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt --from=auto --to=iec --format=\"ROOT %.2f\"") },
+	{ CMD("df /home | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt --from=auto --to=iec --format=\"HOME %.2f\"") },
+	{ CMD("df /srv/media | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt --from=auto --to=iec --format=\"MEDIA %.2f\"") },
 })
 
 static const Block blocks[] = {
-	{ CMD("mpc current -f \"[[%artist% - ]%title%]|[%file]\""), .i = 10 },
+	{ FUNCC(mpd_status, {}), .sig = 1 },
+	{ .p = "W: ", CMD("curl -sN https://wttr.in/nueva_pompeya?format=1"), .i = 30 MINUTES },
 	{ .p = " ", FUNC(carousel, {.v = &disk_usage}), .i = 1 MINUTES },
-	{ FUNCC(battery_status, {}), .sig = 2, .i = 1 MINUTES },
 	{ CMD("date \"+  %Y-%m-%d   %H:%M\""), .i = 10 },
 };
 
