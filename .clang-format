@@ -5,7 +5,8 @@ Language: Cpp
 AlignAfterOpenBracket: Align
 ContinuationIndentWidth: 3
 IndentWidth: 3
-TabWidth: 3
+ReflowComments: true
 SpacesInContainerLiterals: true
+TabWidth: 3
 UseTab: ForContinuationAndIndentation
 ---

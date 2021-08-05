@@ -24,6 +24,9 @@ dwmstatus.o: config.h
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
+config.h: config.def.h
+	cp $< $@
+
 debug: CFLAGS += -g -DDEBUG
 debug: options dwmstatus
 
