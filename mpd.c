@@ -30,9 +30,14 @@ int mpd_status(char *output, unsigned int size, const Arg *arg) {
 		song = mpd_run_get_queue_song_id(conn, song_id);
 		artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 		title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
+		uri = mpd_song_get_uri(song);
 
-		written =
-			snprintf(output, size, "%s %s - %s", icons[state], artist, title);
+		if (artist && title)
+			written =
+				snprintf(output, size, "%s %s - %s", icons[state], artist, title);
+		else
+			written =
+				snprintf(output, size, "%s %s", icons[state], title ? title : uri);
 
 		mpd_song_free(song);
 	}
