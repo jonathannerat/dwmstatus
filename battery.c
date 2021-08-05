@@ -24,9 +24,11 @@ enum {
 	PendingDischarge
 } BatteryState;
 
-static const char *icons[2][5] = {
+static const char *icons[FullyCharged][5] = {
 	[Charging - 1] = {" ", " ", " ", " ", " "},
-	[Discharging - 1] = {"", "", "", "", ""}};
+	[Discharging - 1] = {"", "", "", "", ""},
+	[Empty - 1] = {""},
+	[FullyCharged - 1] = {""}};
 
 static GError *baterr = NULL;
 static GDBusProxy *proxy = NULL;
@@ -60,9 +62,12 @@ int battery_status(char *output, unsigned int size, const Arg *arg) {
 	if (g_variant_dict_lookup(devprops, "Percentage", "d", &percentage) &&
 		 g_variant_dict_lookup(devprops, "State", "u", &state)) {
 		index = (int)percentage / 20;
-		written =
-			snprintf(output, size, "%s %d",
-						icons[state - 1][index == 5 ? 4 : index], (int)percentage);
+
+		if (state == Empty || state == FullyCharged)
+			index = 0;
+
+		written = snprintf(output, size, "%s %d", icons[state - 1][index],
+								 (int)percentage);
 	}
 
 	return written;
