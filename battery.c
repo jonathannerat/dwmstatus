@@ -55,19 +55,19 @@ int battery_status(char *output, unsigned int size, const Arg *arg) {
 	}
 
 	retval = g_dbus_proxy_call_sync(proxy, "GetAll",
-											  g_variant_new("(s)", UPOWER_DEVICE_IFACE),
-											  CALL_FLAGS, -1, NULL, &baterr);
+	                                g_variant_new("(s)", UPOWER_DEVICE_IFACE),
+	                                CALL_FLAGS, -1, NULL, &baterr);
 	devprops = g_variant_dict_new(g_variant_get_child_value(retval, 0));
 
 	if (g_variant_dict_lookup(devprops, "Percentage", "d", &percentage) &&
-		 g_variant_dict_lookup(devprops, "State", "u", &state)) {
+	    g_variant_dict_lookup(devprops, "State", "u", &state)) {
 		index = (int)percentage / 20;
 
 		if (state == Empty || state == FullyCharged)
 			index = 0;
 
 		written = snprintf(output, size, "%s %d", icons[state - 1][index],
-								 (int)percentage);
+		                   (int)percentage);
 	}
 
 	return written;

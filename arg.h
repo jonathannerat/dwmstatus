@@ -11,7 +11,7 @@ extern char *argv0;
 /* use main(int argc, char *argv[]) */
 #define ARGBEGIN                                                               \
 	for (argv0 = *argv, argv++, argc--;                                         \
-		  argv[0] && argv[0][0] == '-' && argv[0][1]; argc--, argv++) {          \
+	     argv[0] && argv[0][0] == '-' && argv[0][1]; argc--, argv++) {          \
 		char argc_;                                                              \
 		char **argv_;                                                            \
 		int brk_;                                                                \
@@ -35,14 +35,14 @@ extern char *argv0;
 
 #define EARGF(x)                                                               \
 	((argv[0][i_ + 1] == '\0' && argv[1] == NULL)                               \
-		 ? ((x), abort(), (char *)0)                                             \
-		 : (brk_ = 1, (argv[0][i_ + 1] != '\0') ? (&argv[0][i_ + 1])             \
-															 : (argc--, argv++, argv[0])))
+	    ? ((x), abort(), (char *)0)                                             \
+	    : (brk_ = 1, (argv[0][i_ + 1] != '\0') ? (&argv[0][i_ + 1])             \
+	                                           : (argc--, argv++, argv[0])))
 
 #define ARGF()                                                                 \
 	((argv[0][i_ + 1] == '\0' && argv[1] == NULL)                               \
-		 ? (char *)0                                                             \
-		 : (brk_ = 1, (argv[0][i_ + 1] != '\0') ? (&argv[0][i_ + 1])             \
-															 : (argc--, argv++, argv[0])))
+	    ? (char *)0                                                             \
+	    : (brk_ = 1, (argv[0][i_ + 1] != '\0') ? (&argv[0][i_ + 1])             \
+	                                           : (argc--, argv++, argv[0])))
 
 #endif

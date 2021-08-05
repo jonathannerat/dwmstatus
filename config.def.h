@@ -14,11 +14,11 @@
  * type, which should be passed as an argument to the carousel FUNC definition
  * below */
 CAROUSEL(disk_usage,
-			{
+         {
 				{CMD("df /     | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt "
-					  "--from=auto --to=iec --format=\"ROOT %.1f\"")},
+                 "--from=auto --to=iec --format=\"ROOT %.1f\"")},
 				{CMD("df /home | tail -n+2 | awk '{print $4 \"Ki\"}' | numfmt "
-					  "--from=auto --to=iec --format=\"HOME %.1f\"")},
+                 "--from=auto --to=iec --format=\"HOME %.1f\"")},
 			})
 
 /* Declare your blocks here. Use the following macros:
@@ -35,8 +35,8 @@ static const Block blocks[] = {
 	{.p = " ", FUNC(carousel, {.v = &disk_usage}), .i = 1 MINUTES},
 
 	/* Uncomment the next block for battery status. Receives an RTMIN+2 signal,
-	 * to update status on AC plug/unplug events, which can be triggered with
-	 * udev rules */
+    * to update status on AC plug/unplug events, which can be triggered with
+    * udev rules */
 	/* {FUNCC(battery_status, {}), .sig = 2, .i = 1 MINUTES}, */
 
 	/* Another command block */

@@ -175,7 +175,7 @@ void setupsignals() {
 	}
 
 	struct sigaction sa_child = {.sa_handler = SIG_DFL,
-										  .sa_flags = SA_NOCLDWAIT};
+	                             .sa_flags = SA_NOCLDWAIT};
 
 	sigaction(SIGCHLD, &sa_child, NULL);
 }

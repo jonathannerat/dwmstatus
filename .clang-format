@@ -8,5 +8,5 @@ IndentWidth: 3
 ReflowComments: true
 SpacesInContainerLiterals: true
 TabWidth: 3
-UseTab: ForContinuationAndIndentation
+UseTab: AlignWithSpaces
 ---
