@@ -13,8 +13,9 @@ typedef struct {
 	unsigned int size;
 } CarouselArg;
 
-#define CAROUSEL(name, ...) CarouselItem name##_items__[] = __VA_ARGS__;\
-CarouselArg name = { name##_items__, LENGTH(name##_items__) };
+#define CAROUSEL(name, ...)                                                    \
+	CarouselItem name##_items__[] = __VA_ARGS__;                                \
+	CarouselArg name = {name##_items__, LENGTH(name##_items__)};
 
 int carousel(char *output, unsigned int size, const Arg *arg);
 

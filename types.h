@@ -7,19 +7,15 @@ typedef union {
 	const void *v;
 } Arg;
 
-typedef enum {
-	CtString,
-	CtCommand,
-	CtFunction
-} ContentType;
+typedef enum { CtString, CtCommand, CtFunction } ContentType;
 
 typedef union {
-	char* s;
-	char* c;
+	char *s;
+	char *c;
 	struct {
-		int (*func)(char*, unsigned int, const Arg*);
+		int (*func)(char *, unsigned int, const Arg *);
 		const Arg arg;
-		void (*cleanfunc)(void*);
+		void (*cleanfunc)(void *);
 	} f;
 } Content;
 

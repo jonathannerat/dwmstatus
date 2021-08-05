@@ -1,10 +1,11 @@
+#include "mpd.h"
+
 #include <mpd/client.h>
 #include <stdio.h>
 
 #include "util.h"
-#include "mpd.h"
 
-static char *icons[] = { "ﱙ  Unknown", "  Stopped", " ", " " };
+static char *icons[] = {"ﱙ  Unknown", "  Stopped", " ", " "};
 static struct mpd_connection *conn = NULL;
 
 int mpd_status(char *output, unsigned int size, const Arg *arg) {
@@ -30,7 +31,8 @@ int mpd_status(char *output, unsigned int size, const Arg *arg) {
 		artist = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 		title = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 
-		written = snprintf(output, size, "%s %s - %s", icons[state], artist, title);
+		written =
+			snprintf(output, size, "%s %s - %s", icons[state], artist, title);
 
 		mpd_song_free(song);
 	}
@@ -41,5 +43,6 @@ int mpd_status(char *output, unsigned int size, const Arg *arg) {
 }
 
 void mpd_status_clean(void *arg) {
-	if (conn != NULL) mpd_connection_free(conn);
+	if (conn != NULL)
+		mpd_connection_free(conn);
 }

@@ -1,22 +1,20 @@
+#include <X11/Xlib.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <X11/Xlib.h>
 
-char* argv0;
+char *argv0;
 #include "arg.h"
-#include "types.h"
 #include "config.h"
+#include "types.h"
 #include "util.h"
-
-
 
 int blockintervalgcd();
 int statuschanged();
 void cacheblock(const Block *b, char *output);
-void parseargs(int argc, char* argv[]);
+void parseargs(int argc, char *argv[]);
 void printstdout(void);
 void run(void);
 void setroot(void);
@@ -26,9 +24,7 @@ void termsighandler(int signum);
 void usage(void);
 void writeblocks(char *buffer);
 
-
-
-static Display* dpy;
+static Display *dpy;
 static int screen;
 static Window root;
 static void (*writestatus)(void) = setroot;
@@ -37,11 +33,7 @@ static int time = 0;
 static char cachedblocks[LENGTH(blocks)][MAX_BLOCK_LEN] = {0};
 static char cachedstatuses[2][MAX_STATUS_LEN];
 
-
-
-int
-main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	parseargs(argc, argv);
 
 	signal(SIGTERM, termsighandler);
@@ -52,20 +44,16 @@ main(int argc, char *argv[])
 	return 0;
 }
 
-
-
-int
-blockintervalgcd()
-{
+int blockintervalgcd() {
 	int gcd = 0, a, b, tmp;
-	const Block* current;
-
+	const Block *current;
 
 	for (int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
 
 		if (current->i != 0) {
-			if (!gcd) gcd = current->i;
+			if (!gcd)
+				gcd = current->i;
 			else {
 				a = gcd;
 				b = current->i;
@@ -84,9 +72,7 @@ blockintervalgcd()
 	return gcd;
 }
 
-void
-cacheblock(const Block *b, char *output)
-{
+void cacheblock(const Block *b, char *output) {
 	int offset = 0, update = 1;
 	char *cmd, newoutput[MAX_BLOCK_LEN] = "";
 	FILE *cmdout;
@@ -95,36 +81,39 @@ cacheblock(const Block *b, char *output)
 		offset += xstrncpy(newoutput, b->p, MAX_BLOCK_LEN);
 
 	switch (b->ct) {
-		case CtString:
-			if (b->c.s)
-				offset += xstrncpy(newoutput + offset, b->c.s, MAX_BLOCK_LEN - offset);
+	case CtString:
+		if (b->c.s)
+			offset += xstrncpy(newoutput + offset, b->c.s, MAX_BLOCK_LEN - offset);
+		break;
+	case CtCommand:
+		cmd = b->c.c;
+		cmdout = popen(cmd, "r");
+		if (!cmdout) {
+			offset +=
+				xstrncpy(newoutput, "☠  popen error", MAX_BLOCK_LEN - offset);
 			break;
-		case CtCommand:
-			cmd = b->c.c;
-			cmdout = popen(cmd, "r");
-			if (!cmdout) {
-				offset += xstrncpy(newoutput, "☠  popen error", MAX_BLOCK_LEN - offset);
-				break;
-			}
-			
-			fgets(newoutput + offset, MAX_BLOCK_LEN - offset, cmdout);
-			pclose(cmdout);
+		}
 
-			/*
-			 * fgets stops reading at a newline and stores it
-			 * remove it to display statusline correctly
-			 */
-			offset = strlen(newoutput);
-			if (newoutput[offset-1] == '\n') newoutput[--offset] = '\0';
-			break;
-		case CtFunction:
-			// returns written bytes to output
-			update = b->c.f.func(newoutput + offset, MAX_BLOCK_LEN - offset, &b->c.f.arg);
-			offset += update;
-			break;
-		default:
-			fprintf(stderr, "Invalid c type: %d. Read config.h", b->ct);
-			exit(1);
+		fgets(newoutput + offset, MAX_BLOCK_LEN - offset, cmdout);
+		pclose(cmdout);
+
+		/*
+		 * fgets stops reading at a newline and stores it
+		 * remove it to display statusline correctly
+		 */
+		offset = strlen(newoutput);
+		if (newoutput[offset - 1] == '\n')
+			newoutput[--offset] = '\0';
+		break;
+	case CtFunction:
+		// returns written bytes to output
+		update =
+			b->c.f.func(newoutput + offset, MAX_BLOCK_LEN - offset, &b->c.f.arg);
+		offset += update;
+		break;
+	default:
+		fprintf(stderr, "Invalid c type: %d. Read config.h", b->ct);
+		exit(1);
 	}
 
 	if (b->s)
@@ -135,53 +124,43 @@ cacheblock(const Block *b, char *output)
 	}
 }
 
-void
-parseargs(int argc, char* argv[])
-{
+void parseargs(int argc, char *argv[]) {
 	ARGBEGIN {
-		case 'p':
-			writestatus = printstdout;
-			break;
-		default:
-			usage();
-	} ARGEND;
+	case 'p':
+		writestatus = printstdout;
+		break;
+	default:
+		usage();
+	}
+	ARGEND;
 }
 
-void
-printstdout(void)
-{
-	printf("%s\n", cachedstatuses[0]);
-}
+void printstdout(void) { printf("%s\n", cachedstatuses[0]); }
 
-void
-run(void)
-{
+void run(void) {
 	int i;
 	const Block *b;
 	int sleeptime = blockintervalgcd();
 
 	while (!stop) {
 		for (i = 0, b = blocks; i < LENGTH(blocks); i++, b++)
-			if ((!b->i && !time) ||
-			    (b->i != 0 && time % b->i == 0)) {
+			if ((!b->i && !time) || (b->i != 0 && time % b->i == 0)) {
 				cacheblock(b, cachedblocks[i]);
 			}
 
-		if (statuschanged()) writestatus();
+		if (statuschanged())
+			writestatus();
 
 		if (sleeptime) {
 			sleep(sleeptime);
-		}
-		else {
+		} else {
 			pause();
 		}
 		time += sleeptime;
 	}
 }
 
-void
-setupsignals()
-{
+void setupsignals() {
 	struct sigaction sa;
 	sa.sa_flags = 0;
 	const Block *current;
@@ -195,17 +174,13 @@ setupsignals()
 		}
 	}
 
-	struct sigaction sa_child = {
-		.sa_handler = SIG_DFL,
-		.sa_flags = SA_NOCLDWAIT
-	};
+	struct sigaction sa_child = {.sa_handler = SIG_DFL,
+										  .sa_flags = SA_NOCLDWAIT};
 
 	sigaction(SIGCHLD, &sa_child, NULL);
 }
 
-void
-sighandler(int signum)
-{
+void sighandler(int signum) {
 	const Block *b;
 
 	for (int i = 0; i < LENGTH(blocks); i++) {
@@ -215,12 +190,11 @@ sighandler(int signum)
 			cacheblock(b, cachedblocks[i]);
 	}
 
-	if (statuschanged()) writestatus();
+	if (statuschanged())
+		writestatus();
 }
 
-int
-statuschanged()
-{
+int statuschanged() {
 	char *current = cachedstatuses[0], *last = cachedstatuses[1];
 	strcpy(last, current);
 
@@ -231,23 +205,14 @@ statuschanged()
 	return strcmp(current, last);
 }
 
-void
-termsighandler(int signum)
-{
-	stop = 1;
-}
+void termsighandler(int signum) { stop = 1; }
 
-void
-usage(void)
-{
-	fprintf(stderr, "usage: %s", argv0);
-}
+void usage(void) { fprintf(stderr, "usage: %s", argv0); }
 
-void
-setroot(void)
-{
+void setroot(void) {
 	dpy = XOpenDisplay(NULL);
-	if (!dpy) die("cannot open display");
+	if (!dpy)
+		die("cannot open display");
 
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
@@ -255,9 +220,7 @@ setroot(void)
 	XCloseDisplay(dpy);
 }
 
-void
-writeblocks(char *buffer)
-{
+void writeblocks(char *buffer) {
 	char *src;
 	const char *pdelim;
 	int written = 0;
