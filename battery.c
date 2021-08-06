@@ -24,7 +24,7 @@ enum {
 	PendingDischarge
 } BatteryState;
 
-static const char *icons[FullyCharged][5] = {
+static const char *icons[4][5] = {
 	[Charging - 1] = {" ", " ", " ", " ", " "},
 	[Discharging - 1] = {"", "", "", "", ""},
 	[Empty - 1] = {""},
@@ -64,9 +64,9 @@ int battery_status(char *output, unsigned int size, const Arg *arg) {
 		index = (int)percentage / 20;
 
 		if (state == Empty || state == FullyCharged)
-			index = 0;
+			index = 1;
 
-		written = snprintf(output, size, "%s %d", icons[state - 1][index],
+		written = snprintf(output, size, "%s %d", icons[state - 1][index-1],
 		                   (int)percentage);
 	}
 
