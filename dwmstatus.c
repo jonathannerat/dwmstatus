@@ -30,6 +30,7 @@ static Window root;
 static void (*writestatus)(void) = setroot;
 static int stop = 0;
 static int time = 0;
+static int sleeptime = 0;
 static char cachedblocks[LENGTH(blocks)][MAX_BLOCK_LEN] = {0};
 static char cachedstatuses[2][MAX_STATUS_LEN];
 
@@ -76,6 +77,11 @@ void cacheblock(const Block *b, char *output) {
 	int offset = 0, update = 1;
 	char *cmd, newoutput[MAX_BLOCK_LEN] = "";
 	FILE *cmdout;
+
+	if (b->wait && !time) {
+		xstrncpy(output, b->meanwhile ? b->meanwhile : BLOCK_NA, MAX_BLOCK_LEN);
+		return;
+	}
 
 	if (b->prefix)
 		offset += xstrncpy(newoutput, b->prefix, MAX_BLOCK_LEN);
@@ -141,12 +147,14 @@ void printstdout(void) { printf("%s\n", cachedstatuses[0]); }
 void run(void) {
 	int i;
 	const Block *b;
-	int sleeptime = blockintervalgcd();
+
+	sleeptime = blockintervalgcd();
 
 	while (!stop) {
 		for (i = 0, b = blocks; i < LENGTH(blocks); i++, b++)
-			if ((!b->interval && !time) ||
-			    (b->interval != 0 && time % b->interval == 0)) {
+			if (!time ||
+			    ((!b->wait || b->wait < time) && b->interval && time % b->interval == 0) ||
+			    (b->wait <= time && time < b->wait + sleeptime)) {
 				cacheblock(b, cachedblocks[i]);
 			}
 

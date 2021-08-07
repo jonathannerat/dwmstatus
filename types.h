@@ -24,7 +24,9 @@ typedef struct {
 	ContentType type;
 	Content content;
 	char *suffix;
+	char *meanwhile;
 	int interval;
+	int wait;
 	int signal;
 } Block;
 
