@@ -23,6 +23,8 @@ int mpd_status(char *output, unsigned int size, const Arg *arg) {
 	status = mpd_run_status(conn);
 	state = mpd_status_get_state(status);
 
+	if (!status)
+		return snprintf(output, size, "ﱙ  N/A");
 	if (state == MPD_STATE_UNKNOWN || state == MPD_STATE_STOP) {
 		written = xstrncpy(output, icons[state], size);
 	} else {
