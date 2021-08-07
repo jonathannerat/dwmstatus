@@ -20,12 +20,12 @@ typedef union {
 } Content;
 
 typedef struct {
-	char *p;
-	ContentType ct;
-	Content c;
-	char *s;
-	int i;
-	int sig;
+	char *prefix;
+	ContentType type;
+	Content content;
+	char *suffix;
+	int interval;
+	int signal;
 } Block;
 
 #endif // TYPES_H

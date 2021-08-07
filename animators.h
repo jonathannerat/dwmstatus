@@ -4,8 +4,8 @@
 #include "types.h"
 
 typedef struct {
-	ContentType ct;
-	Content c;
+	ContentType type;
+	Content content;
 } CarouselItem;
 
 typedef struct {

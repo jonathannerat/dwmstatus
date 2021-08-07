@@ -1,11 +1,11 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#define FUNC(func, args) .ct = CtFunction, .c.f = {&(func), args}
+#define FUNC(func, args) .type = CtFunction, .content.f = {&(func), args}
 #define FUNCC(func, args)                                                      \
-	.ct = CtFunction, .c.f = {&(func), args, &(func##_clean)}
-#define STR(str) .ct = CtString, .c.s = str
-#define CMD(cmd) .ct = CtCommand, .c.s = cmd
+	.type = CtFunction, .content.f = {&(func), args, &(func##_clean)}
+#define STR(str) .type = CtString, .content.s = str
+#define CMD(cmd) .type = CtCommand, .content.s = cmd
 
 #define LENGTH(X) (sizeof(X) / sizeof(X[0]))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

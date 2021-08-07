@@ -15,13 +15,13 @@ int carousel(char *output, unsigned int size, const Arg *arg) {
 
 	i = (i + 1) % carg->size;
 
-	switch (item->ct) {
+	switch (item->type) {
 	case CtString:
-		if (item->c.s)
-			written = xstrncpy(output, item->c.s, size);
+		if (item->content.s)
+			written = xstrncpy(output, item->content.s, size);
 		break;
 	case CtCommand:
-		cmdout = popen(item->c.c, "r");
+		cmdout = popen(item->content.c, "r");
 		if (!cmdout) {
 			written = xstrncpy(output, "☠  popen error!", size);
 			break;
@@ -34,7 +34,7 @@ int carousel(char *output, unsigned int size, const Arg *arg) {
 		pclose(cmdout);
 		break;
 	case CtFunction:
-		written = item->c.f.func(output, size, &item->c.f.arg);
+		written = item->content.f.func(output, size, &item->content.f.arg);
 		break;
 	}
 

@@ -21,6 +21,7 @@ CAROUSEL(disk_usage,
                  "--from=auto --to=iec --format=\"HOME %.1f\"")},
 			})
 
+// clang-format off
 /* Declare your blocks here. Use the following macros:
  * - CMD(cmd) to declare a command block, which executes the command with
  *   /bin/sh, and uses the first line as the block text
@@ -29,18 +30,27 @@ CAROUSEL(disk_usage,
  * - STR(text) to declare a static text block */
 static const Block blocks[] = {
 	/* Command block for oneliner weather status */
-	{.p = "Wth: ", CMD("curl -sN https://wttr.in/?format=1"), .i = 30 MINUTES},
-
+	{ CMD("curl -sN https://wttr.in/?format=1"),
+		.prefix = "Wth: ",
+		.interval = 30 MINUTES
+	},
 	/* Function block, that takes other "blocks" as arguments */
-	{.p = " ", FUNC(carousel, {.v = &disk_usage}), .i = 1 MINUTES},
-
+	{ FUNC(carousel, {.v = &disk_usage}),
+		.prefix = " ",
+		.interval = 1 MINUTES
+	},
 	/* Uncomment the next block for battery status. Receives an RTMIN+2 signal,
     * to update status on AC plug/unplug events, which can be triggered with
     * udev rules */
-	/* {FUNCC(battery_status, {}), .sig = 2, .i = 1 MINUTES}, */
-
+	/* { FUNCC(battery_status, {}),
+		.signal = 2,
+		.interval = 1 MINUTES
+	}, */
 	/* Another command block */
-	{CMD("date \"+ %Y-%m-%d  %H:%M\""), .i = 10},
+	{ CMD("date \"+ %Y-%m-%d  %H:%M\""),
+		.interval = 10
+	},
 };
+// clang-format on
 
 static const char *delim = " │ ";

@@ -51,12 +51,12 @@ int blockintervalgcd() {
 	for (int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
 
-		if (current->i != 0) {
+		if (current->interval != 0) {
 			if (!gcd)
-				gcd = current->i;
+				gcd = current->interval;
 			else {
 				a = gcd;
-				b = current->i;
+				b = current->interval;
 
 				while (a != 0) {
 					tmp = a;
@@ -77,16 +77,17 @@ void cacheblock(const Block *b, char *output) {
 	char *cmd, newoutput[MAX_BLOCK_LEN] = "";
 	FILE *cmdout;
 
-	if (b->p)
-		offset += xstrncpy(newoutput, b->p, MAX_BLOCK_LEN);
+	if (b->prefix)
+		offset += xstrncpy(newoutput, b->prefix, MAX_BLOCK_LEN);
 
-	switch (b->ct) {
+	switch (b->type) {
 	case CtString:
-		if (b->c.s)
-			offset += xstrncpy(newoutput + offset, b->c.s, MAX_BLOCK_LEN - offset);
+		if (b->content.s)
+			offset +=
+				xstrncpy(newoutput + offset, b->content.s, MAX_BLOCK_LEN - offset);
 		break;
 	case CtCommand:
-		cmd = b->c.c;
+		cmd = b->content.c;
 		cmdout = popen(cmd, "r");
 		if (!cmdout) {
 			offset +=
@@ -107,17 +108,17 @@ void cacheblock(const Block *b, char *output) {
 		break;
 	case CtFunction:
 		// returns written bytes to output
-		update =
-			b->c.f.func(newoutput + offset, MAX_BLOCK_LEN - offset, &b->c.f.arg);
+		update = b->content.f.func(newoutput + offset, MAX_BLOCK_LEN - offset,
+		                           &b->content.f.arg);
 		offset += update;
 		break;
 	default:
-		fprintf(stderr, "Invalid c type: %d. Read config.h", b->ct);
+		fprintf(stderr, "Invalid c type: %d. Read config.h", b->type);
 		exit(1);
 	}
 
-	if (b->s)
-		offset += xstrncpy(newoutput + offset, b->s, MAX_BLOCK_LEN - offset);
+	if (b->suffix)
+		offset += xstrncpy(newoutput + offset, b->suffix, MAX_BLOCK_LEN - offset);
 
 	if (update) {
 		xstrncpy(output, newoutput, MAX_BLOCK_LEN);
@@ -144,7 +145,8 @@ void run(void) {
 
 	while (!stop) {
 		for (i = 0, b = blocks; i < LENGTH(blocks); i++, b++)
-			if ((!b->i && !time) || (b->i != 0 && time % b->i == 0)) {
+			if ((!b->interval && !time) ||
+			    (b->interval != 0 && time % b->interval == 0)) {
 				cacheblock(b, cachedblocks[i]);
 			}
 
@@ -168,9 +170,9 @@ void setupsignals() {
 	// block signals
 	for (int i = 0; i < LENGTH(blocks); i++) {
 		current = blocks + i;
-		if (current->sig > 0) {
+		if (current->signal > 0) {
 			sa.sa_handler = sighandler;
-			sigaction(SIGRTMIN + current->sig, &sa, NULL);
+			sigaction(SIGRTMIN + current->signal, &sa, NULL);
 		}
 	}
 
@@ -186,7 +188,7 @@ void sighandler(int signum) {
 	for (int i = 0; i < LENGTH(blocks); i++) {
 		b = blocks + i;
 
-		if (b->sig == signum - SIGRTMIN)
+		if (b->signal == signum - SIGRTMIN)
 			cacheblock(b, cachedblocks[i]);
 	}
 
