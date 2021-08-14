@@ -67,6 +67,8 @@ int battery_status(char *output, unsigned int size, const Arg *arg) {
 
 		if (state == Unknown || state == Empty || state == FullyCharged)
 			index = 0;
+		else if (state == Discharging && index == 5)
+			index = 4;
 
 		written =
 			snprintf(output, size, "%s %d", icons[state][index], (int)percentage);
