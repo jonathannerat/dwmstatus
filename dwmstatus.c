@@ -146,6 +146,7 @@ void printstdout(void) { printf("%s\n", cachedstatuses[0]); }
 
 void run(void) {
 	int i;
+	unsigned int less;
 	const Block *b;
 
 	sleeptime = blockintervalgcd();
@@ -162,11 +163,12 @@ void run(void) {
 			writestatus();
 
 		if (sleeptime) {
-			sleep(sleeptime);
+			less = sleeptime;
+			while (less) less = sleep(less);
+			time += sleeptime;
 		} else {
 			pause();
 		}
-		time += sleeptime;
 	}
 }
 
@@ -184,8 +186,10 @@ void setupsignals() {
 		}
 	}
 
-	struct sigaction sa_child = {.sa_handler = SIG_DFL,
-	                             .sa_flags = SA_NOCLDWAIT};
+	struct sigaction sa_child = {
+		.sa_handler = SIG_DFL,
+		.sa_flags = SA_NOCLDWAIT
+	};
 
 	sigaction(SIGCHLD, &sa_child, NULL);
 }
