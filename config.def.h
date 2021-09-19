@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "animators.h"
-#include "battery.h"
-#include "mpd.h"
+#include "components/animators.h"
+#include "components/battery.h"
+#include "components/mpd.h"
 #include "types.h"
 #include "util.h"
 

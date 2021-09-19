@@ -1,8 +1,10 @@
 .POSIX:
 
 PREFIX = /usr/local
-SRC  = dwmstatus.c util.c battery.c animators.c mpd.c
+SRC  = $(wildcard *.c)
+SRC += $(wildcard components/*.c)
 OBJ  = $(SRC:.c=.o)
+
 LIBS = -lX11 -lmpdclient `pkg-config --libs dbus-glib-1 gio-2.0` 
 CFLAGS = `pkg-config --cflags dbus-glib-1 gio-2.0` 
 LDFLAGS = $(LIBS)
@@ -22,7 +24,7 @@ $(OBJ): types.h
 dwmstatus.o: config.h
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 config.h: config.def.h
 	cp $< $@
@@ -34,6 +36,6 @@ install: dwmstatus
 	install -D -m 755 dwmstatus $(PREFIX)/bin
 
 clean:
-	-rm dwmstatus *.o
+	-rm dwmstatus *.o components/*.o
 
 .PHONY = all options debug clean

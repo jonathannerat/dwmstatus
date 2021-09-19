@@ -3,10 +3,11 @@
 #include <mpd/client.h>
 #include <stdio.h>
 
-#include "util.h"
+#include "../util.h"
 
 static char *icons[] = {"ﱙ  Unknown", "  Stopped", " ", " "};
 static struct mpd_connection *conn = NULL;
+static int i = 0;
 
 int mpd_status(char *output, unsigned int size, const Arg *arg) {
 	struct mpd_status *status;

@@ -1,7 +1,7 @@
 #ifndef ANIMATORS_H
 #define ANIMATORS_H
 
-#include "types.h"
+#include "../types.h"
 
 typedef struct {
 	ContentType type;

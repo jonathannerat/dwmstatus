@@ -2,7 +2,7 @@
 #include <gio/gio.h>
 #include <stdio.h>
 
-#include "types.h"
+#include "../types.h"
 
 #define PROXY_FLAGS G_DBUS_PROXY_FLAGS_NONE
 #define CALL_FLAGS G_DBUS_CALL_FLAGS_NONE
